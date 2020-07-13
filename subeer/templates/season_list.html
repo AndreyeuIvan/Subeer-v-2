@@ -1,0 +1,17 @@
+<!--Show all seasons -->
+
+<div class='container'>
+	<div class="jumbotron bg-green">
+		<div class="col-md-6 px-0">
+			<h1 class="display-4 font-italic">
+				<p class="lead mb-0">
+					<a href="{{ episode.url }}/">
+					{% for episode in episodes %}
+						{{ episode.title }}
+						{% endfor %}
+					</a>
+				</p>
+			</h1>
+		</div>
+	  </div>
+</div>

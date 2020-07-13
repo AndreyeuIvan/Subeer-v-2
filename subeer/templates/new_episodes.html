@@ -1,0 +1,35 @@
+<!--Here I will show my episodes -->
+{% extends 'base.html' %}
+{% block episode_new %}
+
+  <div class="row mb-4">
+    <div class="col-sm-12">
+      <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-8 shadow-sm h-md-25 position-relative">
+      	{% for episode in page_obj %}
+        <div class="col p-2 d-flex flex-column position-static">
+          <h3 class="mb-2">{{ episode.title}}</h3>
+          <a href="{{ episode.url }}" class="stretched-link">Download</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock %}

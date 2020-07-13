@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="post">
+        <a class="btn btn-default" href="{% url 'category_edit' pk=category.pk "><span class="glyphicon glyphicon-pencil"></span></a>
+        
+        <h2>{{ categories.name }}</h2>
+        <p>{{ categories.description }}</p>
+          
+    </div>
+{% endblock %}

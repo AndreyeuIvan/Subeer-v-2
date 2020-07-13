@@ -1,0 +1,20 @@
+
+{% extends 'base.html' %}
+{% block serial_detail %}
+    	<h1 class="display-4 font-italic">
+	      	
+				{{ serial.title }}
+			</h1>
+	      <p class="lead my-3">{{ serial.description }}</p>
+      	{% for episode in episodes %}	
+         <a class="btn btn-default" href="{% url 'serial_edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+        <div class="col p-4 d-flex flex-column position-static">
+          <a href="{{ episode.url }}" class="stretched-link">
+          	<h3 class="mb-0">
+          		<li>{{ episode.title }}
+          		</h3>
+          </a>
+        {% endfor %}
+      </div>
+
+{% endblock %}
