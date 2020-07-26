@@ -1,0 +1,16 @@
+<!--Here I will show all available serials -->
+{% extends 'base.html' %}
+{% block content %}
+<div class='container'>
+	<div class="jumbotron bg-green">
+		<div class="col-md-6 px-0">
+			<h1 class="display-4 font-italic">
+				<a class="post" href="/{{ serial.url }}/">
+					{{ serials.title }}
+				</a>
+			</h1>
+			{{ serials.description }}	
+		</div>
+	</div>
+</div>
+{% endblock %}

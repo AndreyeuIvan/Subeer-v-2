@@ -2,9 +2,9 @@
 
 {% block content %}
     <div class="post">
-        <a class="btn btn-default" href="{% url 'category_edit' pk=category.pk "><span class="glyphicon glyphicon-pencil"></span></a>
+        <a class="btn btn-default" href="{% url 'category-edit' pk=categories.pk %}"><span class="glyphicon glyphicon-pencil"></span>
         
-        <h2>{{ categories.name }}</h2>
+        <h2>{{ categories.name }}</h2></a>
         <p>{{ categories.description }}</p>
           
     </div>

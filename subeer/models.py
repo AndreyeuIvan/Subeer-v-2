@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
-# Create your models here.
+from django.contrib.auth.models import User
+
 
 class Category(models.Model):
 	'Category'
@@ -25,7 +26,7 @@ class Serial(models.Model):
 	)
 	date_of_release = models.DateField("Date of premiere", default=date.today)
 	rate = models.SmallIntegerField("Значение", default=0)
-	url = models.SlugField(max_length=130, unique=True)
+	url = models.SlugField(max_length=130)
 
 	def __str__(self):
 		return self.title
@@ -57,3 +58,15 @@ class Opinion(models.Model):
 	Issue = models.CharField(max_length=100)
 	Description = models.TextField()
 	date_issue = models.DateTimeField(auto_now=True)
+
+
+class UserProfile(models.Model):
+	'''Creating user model in order to have data stored into db'''
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+	website = models.URLField(blank=True)
+	picture = models.ImageField(upload_to = 'profile_images', blank=True)
+
+
+	def __str__(self):
+		return self.user.username

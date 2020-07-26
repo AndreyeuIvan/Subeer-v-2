@@ -1,19 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.core.paginator import Paginator
-from .models import Serial, Episode, Category
 from django.views.generic.base import View
 from django.db.models import Q
 import requests
-from .form import NameForm, CategoryForm
-
-
-def serial_list(request):
-	
-	serials = Serial.objects.all()
-	paginator = Paginator(serials, 2)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-	return render(request, 'serial_all.html', {'page_obj': page_obj})
+from .models import Serial, Episode, Category, UserProfile
+from .form import NameForm, CategoryForm, SerialForm, UserForm, UserProfileForm
+from django.utils import timezone
+from registration.backends.simple.views import RegistrationView
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 def rating(request):
@@ -28,7 +25,7 @@ def rating(request):
 def new_episodes(request):
 
 	new_episode = Episode.objects.order_by('date_of_adding')
-	paginator = Paginator(new_episode, 3)
+	paginator = Paginator(new_episode, 1)
 	page_number = request.GET.get('page')
 	page_obj = paginator.get_page(page_number)
 	return render(request, 'new_episodes.html', {'page_obj': page_obj})
@@ -43,28 +40,14 @@ def new_serials(request):
 	return render(request, 'new_serials.html', {'page_obj': page_obj})
 
 
-class SerialDetailView(View):
-	
-	def get_serial(self, request, slug):
-		serial = Serial.objects.get(url=slug)
-		episodes = Episode.objects.filter(serial_id=serial.id)
-		return render(request, 'serial_details.html', {'serial':serial, 'episodes':episodes})
+def get_serial(request, slug):
+	serial = Serial.objects.get(url=slug)
+	episodes = Episode.objects.filter(serial_id=serial.id)
+	return render(request, 'serial_details.html', {'serial':serial, 'episodes':episodes})
 
 
 class EpisodeDetailView(View):
 	pass
-
-
-def search_serial(request):
-
-	query = request.GET.get('q')
-
-	if query:
-		serials = Serial.objects.filter(
-			Q(title__icontains=query))
-	else:
-		serials = Serial.objects.all()
-	return render(request , 'search_serial.html', {'serials':serials})
 
 
 def serial_new(request):
@@ -124,6 +107,7 @@ def rest(request):
 		}
 	return render(request, 'rest.html', {'search_result': search_result})
 
+
 def get_name(request):
 	if request.method == 'GET':
 		form = NameForm()
@@ -137,6 +121,7 @@ def get_name(request):
 		return HttpResponseNotAllowed()
 
 
+#Creating form in order to change or add Category 
 def category_show(request, pk):
 	categories = get_object_or_404(Category,pk=pk)
 	return render(request, 'category_details.html', {'categories': categories})
@@ -165,3 +150,106 @@ def category_edit(request, pk):
 	else:
 		form = CategoryForm(instance=category)
 	return render(request, 'category_edit.html', {'form': form})
+
+
+#Creating Serial form in order to chage and add category
+def search_serial(request):
+	
+	query = request.GET.get('q')
+	if query:
+		serials = Serial.objects.filter(
+			Q(title__icontains=query))
+		return serial_show(request, pk=serials.values()[0]['id'])
+	else:
+		return serial_all(request)
+
+
+def serial_list(request):
+	serials = Serial.objects.all()
+	paginator = Paginator(serials, 3)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+	return render(request, 'serial_all.html', {'page_obj': page_obj})
+
+
+def serial_show(request, pk):
+	'''Here I want to show list of Serials'''
+	serials = get_object_or_404(Serial, pk=pk)
+	return render(request, 'serial_show.html', {'serials': serials})
+
+
+def serial_new(request):
+	if request.method == 'POST':
+		form = SerialForm(request.POST)
+		if form.is_valid():
+			serial = form.save(commit=False)
+			serial.date_of_release = timezone.now()
+			serial.save()
+			return serial_list(request)
+	else:
+		form = SerialForm()
+	return render(request, 'form.html', {'form':form})
+
+
+def serial_edit(request,pk):
+	serial = get_object_or_404(Serial, pk=pk)
+	if request.method == 'POST':
+		form = CategoryForm(request.POST, instance=serial)
+		if form.is_valid():
+			serial = form.save(commit=False)
+			serial.save()
+			return serial_list(request, pk=serial.pk)
+	else:
+		form = CategoryForm(instance=serial)
+	return render(request, 'serial_edit.html', {'form':form})
+
+# registration
+
+def register(request):
+	registered = False
+	if request.method == 'POST':
+		user_form = UserForm(data=request.POST)
+		profile_form = UserProfileForm(data=request.POST)
+
+		if user_form.is_valid() and profile_form.is_valid():
+			user = user_form.save()
+			user.set_password(user.password)
+			user.save()
+			profile = profile_form.save(commit=False)
+			profile.user = user
+			if 'picture' in request.FILES:
+				profile.picture = request.FILES['picture']
+			profile.save()
+			registered = True
+		else:
+			print(user_form.errors, profile_form.errors)
+	else:
+		user_form = UserForm()
+		profile_form = UserProfileForm()
+	return render(request,
+				 'registration/register.html',
+				 {'user_form': user_form,
+				 'profile_form':profile_form,
+				 'registered':registered} )
+
+def user_login(request):
+	if request.method == 'POST':
+		username = request.POST.get('username')
+		password = request.POST.get('password')
+
+		user = authenticate(username=username, password=password)
+		if user:
+			if user.is_active:
+				login(request, user)
+				return serial_list(request)
+			else:
+				return HttpResponse('not allowed')
+		else:
+			print(f'Invalid login details: {username}, {password}')
+	else:
+		return render(request, 'registration/login.html')
+# Create a new class that redirects the user to the index page,
+#if successful at logging
+class My(RegistrationView):
+	def get_success_url(self, user):
+		return ''

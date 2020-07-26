@@ -1,20 +1,5 @@
-"""Subeer URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from subeer import views
 from django.conf.urls import url
 from django.contrib import admin
@@ -24,9 +9,24 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #path('userapi/', include('api.urls')),
     #path('rest_api/',views.rest, name='rest'),
+    # category form
     path('category/new/',views.category_new, name='category-new'),
     path('category/<int:pk>', views.category_show, name='category-show'),
     path('category/<int:pk>/edit',views.category_edit, name='category-edit'),
+
+    #serial form
+    path('serial/new/',views.serial_new, name='serial-new'),
+    path('serial/<int:pk>/', views.serial_show, name='serial-list'),
+    path('serial/<int:pk>/edit/',views.serial_edit, name='serial-edit'),
+
+    #registration 
+    #path('accounts/', include('registration.backends.simple.urls')),
+    #re_path(r'^accounts/register/$', views.My.as_view(), name='registration_register'),
+    re_path(r'register/$', views.register, name='register'),
+    path('login/', views.user_login, name='login'),
+    #re_path(r'restricted/', views.restricted, name='restricted'),
+    #path('logout/', views.LogoutView.as_view(), name='logout'),
+
     path('',views.serial_list, name='main'),
     path('list/',views.serial_list, name='list'),
     path('search/', views.search_serial,name='search'),
@@ -36,7 +36,8 @@ urlpatterns = [
     path('form/',views.category_new, name='add_category'),
     path('new/', views.serial_new, name='serial_new'),
     #path('/<int: pk>/edit/',views.serial_edit, name='serial_edit'),
-    path('<slug:slug>/', views.SerialDetailView.as_view(),name='details'),
+    #path('<slug:slug>/', views.get_serial, name='details'),
+
 
 
     #path('<slug:slug>/<int:pk_season>/<int:pk_episode', viewsEpisodeDetailView.as_view, name='episode'),
