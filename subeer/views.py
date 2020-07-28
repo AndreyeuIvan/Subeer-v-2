@@ -247,7 +247,7 @@ def user_login(request):
 		else:
 			print(f'Invalid login details: {username}, {password}')
 	else:
-		return render(request, 'registration/login.html')
+		return render(request, 'registration/login_old.html')
 
 
 def some_view(request):
@@ -267,10 +267,6 @@ def user_logout(request):
 	# Since we know the user is logged in, we can now just log them out.
 	logout(request)
 	# Take the user back to the homepage.
-	return HttpResponseRedirect(reverse('index'))
+	return serial_list(request)
 
 # Create a new class that redirects the user to the index page,
-#if successful at logging
-class My(RegistrationView):
-	def get_success_url(self, user):
-		return ''
