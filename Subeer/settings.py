@@ -143,3 +143,5 @@ LOGIN_REDIRECT_URL =  '/'
 
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course, use a different value.
 REGISTRATION_AUTO_LOGIN = True # Automatically log the user in
+
+LOGIN_URL = 'login/'

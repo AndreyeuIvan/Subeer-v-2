@@ -248,6 +248,27 @@ def user_login(request):
 			print(f'Invalid login details: {username}, {password}')
 	else:
 		return render(request, 'registration/login.html')
+
+
+def some_view(request):
+	if not request.user.is_authenticated():
+		return HttpResponse("You are logged in.")
+	else:
+		return HttpResponse("You are not logged in.")
+
+
+@login_required
+def restricted(request):
+	return HttpResponse("Since you're logged in, you can see this text!")
+
+
+@login_required
+def user_logout(request):
+	# Since we know the user is logged in, we can now just log them out.
+	logout(request)
+	# Take the user back to the homepage.
+	return HttpResponseRedirect(reverse('index'))
+
 # Create a new class that redirects the user to the index page,
 #if successful at logging
 class My(RegistrationView):

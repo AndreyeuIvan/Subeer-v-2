@@ -6,12 +6,19 @@
 <!-- navigation bar -->
 {% include 'nav.html' %}
 
+
+
 {% block content %}
 {% endblock %}
 
+
+{% if user.is_authenticated %}
 <!--serials -->
 {% block serial_all %} 
 {% endblock %}
+{% else %}
+	hey there ANONYMUS!
+{% endif %}
 
 <!-- Episodes new -->
 {% block episode_new %} 
@@ -20,3 +27,9 @@
 <!-- Serials recently added-->
 {% block new_serials %} 
 {% endblock %}
+
+{% if user.is_authenticated %}
+	howdy {{ user.username }}!
+{% else %}
+	hey there partner!
+{% endif %}
