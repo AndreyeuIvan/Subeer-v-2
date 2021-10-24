@@ -19,13 +19,7 @@ urlpatterns = [
     path('serial/<int:pk>/', views.serial_show, name='serial-list'),
     path('serial/<int:pk>/edit/',views.serial_edit, name='serial-edit'),
 
-    #registration 
-    #re_path(r'^accounts/', include('registration.backends.simple.urls')),
-    #re_path(r'^accounts/register/', views.My.as_view(), name='registration_register'),
-    re_path(r'^register/', views.register, name='register'),
-    re_path(r'^login/', views.user_login, name='login'),
-    #re_path(r'restricted/', views.restricted, name='restricted'),
-    re_path(r'^logout/$', views.user_logout, name='logout'),
+    path('account/', include('account.urls'), name=account),
 
     path('',views.serial_list, name='main'),
     path('list/',views.serial_list, name='list'),
